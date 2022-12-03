@@ -5,9 +5,16 @@ mod f64array;
 pub use f64array::{
     F64ArcArray,
     F64Array,
+    F64ArrayView,
+    F64ArrayViewMut,
+    F64LatLng,
+    F64LatLngArcArray,
+    F64LatLngArray,
+    F64LatLngArrayView,
+    F64LatLngArrayViewMut,
     ArrayWithF64Methods,
     ArrayWithF64AngularMethods,
-    F64ArrayView,
+    ArrayWithF64LatLngMethods,
 };
 
 #[cfg(test)]
