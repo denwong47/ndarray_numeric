@@ -1,3 +1,5 @@
+use std::f64;
+
 use duplicate::duplicate_item;
 use ndarray::{
     ArcArray,
@@ -5,6 +7,8 @@ use ndarray::{
     ArrayBase,
     ArrayView,
     Dimension,
+    Ix1,
+    Ix2,
     OwnedRepr,
 };
 
@@ -12,12 +16,14 @@ pub type F64Array<D> = Array<f64, D>;
 pub type F64ArcArray<D> = ArcArray<f64, D>;
 pub type F64ArrayView<'a, D> = ArrayView<'a, f64, D>;
 
+pub type F64LatLng = F64Array<Ix1>;
+pub type F64LatLngArray = F64Array<Ix2>;
 
 /// Trait for Arrays supporting f64 operations.
 /// 
 /// While the elements of the base array is not required to be `f64`,
 /// the returned arrays are locked to `f64` only.
-pub trait ArrayWithF64Methods<D> 
+pub trait ArrayWithF64Methods<D>
 where
     D: Dimension
 {
@@ -191,5 +197,79 @@ where   D: Dimension {
     }
     fn trunc(&self) -> F64Array<D> {
         return self.map(|num| num.trunc());
+    }
+}
+
+// =====================================================================================
+
+/// Additional Trait for Arrays containing angular f64 data.
+/// 
+pub trait ArrayWithF64AngularMethods<D>
+where
+    D: Dimension
+{
+    fn to_rad(&self) -> F64Array<D>;
+    fn to_dec(&self) -> F64Array<D>;
+}
+
+/// Implements `f64` angular conversion methods for ArrayBase.
+/// 
+/// This `impl` is trait bound to `f64` Arrays only.
+/// use duplicate::duplicate_item;
+#[duplicate_item(
+    ArrayType                           Generics;
+    [ F64Array<D> ]                     [ D ];
+    [ F64ArcArray<D> ]                  [ D ];
+    [ F64ArrayView<'a, D> ]             [ 'a, D ];
+)]
+impl<Generics> ArrayWithF64AngularMethods<D>
+for ArrayType
+where   D: Dimension {
+    fn to_rad(&self) -> F64Array<D> {
+        return self * f64::consts::PI / 180.;
+    }
+
+    fn to_dec(&self) -> F64Array<D> {
+        return self * 180. / f64::consts::PI;
+    }
+}
+
+// =====================================================================================
+
+/// Additional Trait for Arrays containing latitude-longitude f64 data.
+/// 
+pub trait ArrayWithF64LatLngMethods<D>
+where
+    D: Dimension
+{
+    fn bound_lat(&mut self);
+    fn bound_lng(&mut self);
+    fn bound(&mut self);
+}
+
+/// Implements `f64` latitude-longitude conversion methods for ArrayBase.
+/// 
+/// This `impl` is trait bound to `f64` Arrays only.
+/// use duplicate::duplicate_item;
+#[duplicate_item(
+    ArrayType                           Generics;
+    [ F64Array<D> ]                     [ D ];
+    [ F64ArcArray<D> ]                  [ D ];
+    [ F64ArrayView<'a, D> ]             [ 'a, D ];
+)]
+impl<Generics> ArrayWithF64LatLngMethods<D>
+for ArrayType
+where   D: Dimension {
+    fn bound_lat(&mut self) {
+        // TODO Write this with axis_iter_mut
+    }
+
+    fn bound_lng(&mut self) {
+        // TODO Write this with axis_iter_mut
+    }
+
+    fn bound(&mut self) {
+        self.bound_lat();
+        self.bound_lng();
     }
 }

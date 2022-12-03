@@ -6,6 +6,7 @@ pub use f64array::{
     F64ArcArray,
     F64Array,
     ArrayWithF64Methods,
+    ArrayWithF64AngularMethods,
     F64ArrayView,
 };
 
@@ -53,10 +54,10 @@ mod TestName {
 
 #[cfg(test)]
 mod test_readme {
-    use std::f64::consts;
     use super::f64array::{
         F64Array,
         ArrayWithF64Methods,
+        ArrayWithF64AngularMethods,
     };
 
     static SHAPE:(usize, usize) = (3, 4);
@@ -71,7 +72,7 @@ mod test_readme {
         );
 
         // ndarrays already support simple arithematics out of the box
-        let rads = degs  * consts::PI / 180.;
+        let rads = degs.to_rad();
 
         // F64Array further allows `f64` native methods to be used on the array.
         let sin_values = rads.sin();
