@@ -6,6 +6,8 @@ use ndarray::{
     Array,
     ArrayBase,
     ArrayView,
+    ArrayViewMut,
+    Axis,
     Dimension,
     Ix1,
     Ix2,
@@ -15,9 +17,16 @@ use ndarray::{
 pub type F64Array<D> = Array<f64, D>;
 pub type F64ArcArray<D> = ArcArray<f64, D>;
 pub type F64ArrayView<'a, D> = ArrayView<'a, f64, D>;
+pub type F64ArrayViewMut<'a, D> = ArrayViewMut<'a, f64, D>;
 
+#[allow(dead_code)]
 pub type F64LatLng = F64Array<Ix1>;
 pub type F64LatLngArray = F64Array<Ix2>;
+pub type F64LatLngArcArray = F64ArcArray<Ix2>;
+#[allow(dead_code)]
+pub type F64LatLngArrayView<'a> = F64ArrayView<'a, Ix2>;
+#[allow(dead_code)]
+pub type F64LatLngArrayViewMut<'a> = F64ArrayViewMut<'a, Ix2>;
 
 /// Trait for Arrays supporting f64 operations.
 /// 
@@ -77,6 +86,7 @@ where
     [ F64Array<D> ]                     [ D ];
     [ F64ArcArray<D> ]                  [ D ];
     [ F64ArrayView<'a, D> ]             [ 'a, D ];
+    [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
 )]
 impl<Generics> ArrayWithF64Methods<D>
 for ArrayType
@@ -221,6 +231,7 @@ where
     [ F64Array<D> ]                     [ D ];
     [ F64ArcArray<D> ]                  [ D ];
     [ F64ArrayView<'a, D> ]             [ 'a, D ];
+    [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
 )]
 impl<Generics> ArrayWithF64AngularMethods<D>
 for ArrayType
@@ -238,13 +249,9 @@ where   D: Dimension {
 
 /// Additional Trait for Arrays containing latitude-longitude f64 data.
 /// 
-pub trait ArrayWithF64LatLngMethods<D>
-where
-    D: Dimension
+pub trait ArrayWithF64LatLngMethods
 {
-    fn bound_lat(&mut self);
-    fn bound_lng(&mut self);
-    fn bound(&mut self);
+    fn normalize(&mut self);
 }
 
 /// Implements `f64` latitude-longitude conversion methods for ArrayBase.
@@ -253,23 +260,39 @@ where
 /// use duplicate::duplicate_item;
 #[duplicate_item(
     ArrayType                           Generics;
-    [ F64Array<D> ]                     [ D ];
-    [ F64ArcArray<D> ]                  [ D ];
-    [ F64ArrayView<'a, D> ]             [ 'a, D ];
+    [ F64LatLngArray ]                  [];
+    [ F64LatLngArcArray ]               [];
+    // [ F64LatLngArrayView<'a> ]          [ 'a ];
+    // [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
 )]
-impl<Generics> ArrayWithF64LatLngMethods<D>
-for ArrayType
-where   D: Dimension {
-    fn bound_lat(&mut self) {
-        // TODO Write this with axis_iter_mut
-    }
+impl<Generics> ArrayWithF64LatLngMethods
+for ArrayType {
+    fn normalize(&mut self) {
+        return self.axis_iter_mut(Axis(0)).for_each(
+            | mut latlng | {
+                let mut lat = latlng[0] % 360.;
+                let mut lng = latlng[1] % 360.;
 
-    fn bound_lng(&mut self) {
-        // TODO Write this with axis_iter_mut
-    }
+                if lat > 180. {lat -= 360.}
+                if lat < -180. {lat += 360.}
+                if lat > 90. {
+                    lat = 180. - lat;
+                    lng = lng + 180.;
+                }
+                if lat < -90. {
+                    lat = -180. - lat;
+                    lng = lng + 180.;
+                }
 
-    fn bound(&mut self) {
-        self.bound_lat();
-        self.bound_lng();
+                match lng {
+                    value if value > 180. => lng -= 360.,
+                    value if value < -180. => lng += 360.,
+                    _ => {},
+                };
+
+                latlng[0] = lat;
+                latlng[1] = lng;
+            }
+        );
     }
 }

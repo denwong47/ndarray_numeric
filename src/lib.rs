@@ -78,3 +78,51 @@ mod test_readme {
         let sin_values = rads.sin();
     }
 }
+
+#[cfg(test)]
+mod test_latlng {
+    use super::f64array::{
+        F64Array,
+        ArrayWithF64LatLngMethods,
+    };
+
+    static SHAPE:(usize, usize) = (18, 2);
+
+    #[test]
+    #[allow(unused_variables)]
+    fn test_normalize() {
+        // Generate an array of degrees
+        let mut degs = F64Array::from_shape_fn(
+            SHAPE,
+            |x| ((x.0)*SHAPE.1 + (x.1)) as f64 * 40. - 180.
+        );
+
+        // Normalize the numbers in place.
+        degs.normalize();
+        
+        // Check normalization results
+        assert!(degs == F64Array::from_shape_vec(
+            SHAPE,
+            vec![
+                0.0, 40.0,
+                -80.0, 120.0,
+                -20.0, 20.0,
+                60.0, 100.0,
+                40.0, 0.0,
+                -40.0, 80.0,
+                -60.0, -20.0,
+                20.0, 60.0,
+                80.0, -40.0,
+                0.0, 40.0,
+                -80.0, 120.0,
+                -20.0, 20.0,
+                60.0, 100.0,
+                40.0, 0.0,
+                -40.0, 80.0,
+                -60.0, -20.0,
+                20.0, 60.0,
+                80.0, -40.0
+            ]
+        ).unwrap());
+    }
+}
