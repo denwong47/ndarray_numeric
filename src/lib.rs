@@ -4,10 +4,16 @@ use duplicate::duplicate_item;
 mod f64array;
 pub use f64array::{
     F64ArcArray,
+    F64ArcArray1,
+    F64ArcArray2,
     F64Array,
+    F64Array1,
+    F64Array2,
     F64ArrayView,
     F64ArrayViewMut,
     F64LatLng,
+    F64LatLngView,
+    F64LatLngViewMut,
     F64LatLngArcArray,
     F64LatLngArray,
     F64LatLngArrayView,

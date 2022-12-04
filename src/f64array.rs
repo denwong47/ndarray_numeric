@@ -15,14 +15,20 @@ use ndarray::{
 };
 
 pub type F64Array<D> = Array<f64, D>;
+pub type F64Array1 = F64Array<Ix1>;
+pub type F64Array2 = F64Array<Ix2>;
 pub type F64ArcArray<D> = ArcArray<f64, D>;
+pub type F64ArcArray1 = F64ArcArray<Ix1>;
+pub type F64ArcArray2 = F64ArcArray<Ix2>;
 pub type F64ArrayView<'a, D> = ArrayView<'a, f64, D>;
 pub type F64ArrayViewMut<'a, D> = ArrayViewMut<'a, f64, D>;
 
 #[allow(dead_code)]
-pub type F64LatLng = F64Array<Ix1>;
-pub type F64LatLngArray = F64Array<Ix2>;
-pub type F64LatLngArcArray = F64ArcArray<Ix2>;
+pub type F64LatLng = F64Array1;
+pub type F64LatLngView = F64ArrayView<'a, Ix1>;
+pub type F64LatLngViewMut = F64ArrayViewMut<'a, Ix1>;
+pub type F64LatLngArray = F64Array2;
+pub type F64LatLngArcArray = F64ArcArray2;
 #[allow(dead_code)]
 pub type F64LatLngArrayView<'a> = F64ArrayView<'a, Ix2>;
 #[allow(dead_code)]
