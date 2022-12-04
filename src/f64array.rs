@@ -350,7 +350,7 @@ pub trait ArrayWithF64LatLngMethods : ArrayWithF64AngularMethods<Ix2>
     [ F64LatLngArray ]                  [ ];
     [ F64LatLngArcArray ]               [ ];
     // [ F64LatLngArrayView<'a> ]          [ 'a ];
-    // [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
+    [ F64LatLngArrayViewMut<'a> ]          [ 'a ];
 )]
 impl<Generics> ArrayWithF64LatLngMethods
 for ArrayType
