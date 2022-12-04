@@ -13,6 +13,7 @@ use ndarray::{
     Ix1,
     Ix2,
     OwnedRepr,
+    Zip,
 };
 
 pub type F64Array<D> = Array<f64, D>;
@@ -54,7 +55,8 @@ where
     fn asin(&self) -> F64Array<D>;
     fn asinh(&self) -> F64Array<D>;
     fn atan(&self) -> F64Array<D>;
-    fn atan2(&self, other: f64) -> F64Array<D>;
+    fn atan2_f64(&self, other: f64) -> F64Array<D>;
+    fn atan2_arr<'a>(&self, other: F64Array<D>) -> F64Array<D>;
     fn atanh(&self) -> F64Array<D>;
     fn cbrt(&self) -> F64Array<D>;
     fn ceil(&self) -> F64Array<D>;
@@ -123,8 +125,19 @@ where   D: Dimension {
     fn atan(&self) -> F64Array<D> {
         return self.map(|num| num.atan());
     }
-    fn atan2(&self, other: f64) -> F64Array<D> {
+    fn atan2_f64(&self, other: f64) -> F64Array<D> {
         return self.map(|num| num.atan2(other));
+    }
+    fn atan2_arr(&self, other: F64Array<D>) -> F64Array<D> 
+    where D: Dimension {
+        // From https://docs.rs/ndarray/latest/src/ndarray/impl_ops.rs.html#115.
+        // Honestly not quite sure what this is doing but that's the only
+        // elementwise operations between 2 arrays that work.
+        return Zip::from(self.view())
+                    .and(other.view())
+                    .map_collect(
+                        move |x, y| f64::atan2(*x, *y)
+                    );
     }
     fn atanh(&self) -> F64Array<D> {
         return self.map(|num| num.atanh());
