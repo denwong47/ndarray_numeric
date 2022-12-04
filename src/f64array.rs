@@ -259,7 +259,8 @@ where   D: Dimension {
 
 /// Additional Trait for Arrays containing latitude-longitude f64 data.
 /// 
-pub trait ArrayWithF64LatLngMethods
+/// Only allow for arrays with 2 dimensions.
+pub trait ArrayWithF64LatLngMethods : ArrayWithF64AngularMethods<Ix2>
 {
     fn normalize(&mut self);
 }
@@ -270,13 +271,14 @@ pub trait ArrayWithF64LatLngMethods
 /// use duplicate::duplicate_item;
 #[duplicate_item(
     ArrayType                           Generics;
-    [ F64LatLngArray ]                  [];
-    [ F64LatLngArcArray ]               [];
+    [ F64LatLngArray ]                  [ ];
+    [ F64LatLngArcArray ]               [ ];
     // [ F64LatLngArrayView<'a> ]          [ 'a ];
     // [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
 )]
 impl<Generics> ArrayWithF64LatLngMethods
-for ArrayType {
+for ArrayType 
+{
     fn normalize(&mut self) {
         return self.axis_iter_mut(Axis(0)).for_each(
             | mut latlng | {
