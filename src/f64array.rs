@@ -25,8 +25,8 @@ pub type F64ArrayViewMut<'a, D> = ArrayViewMut<'a, f64, D>;
 
 #[allow(dead_code)]
 pub type F64LatLng = F64Array1;
-pub type F64LatLngView = F64ArrayView<'a, Ix1>;
-pub type F64LatLngViewMut = F64ArrayViewMut<'a, Ix1>;
+pub type F64LatLngView<'a> = F64ArrayView<'a, Ix1>;
+pub type F64LatLngViewMut<'a> = F64ArrayViewMut<'a, Ix1>;
 pub type F64LatLngArray = F64Array2;
 pub type F64LatLngArcArray = F64ArcArray2;
 #[allow(dead_code)]
