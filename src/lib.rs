@@ -18,9 +18,14 @@ pub use f64array::{
     F64LatLngArray,
     F64LatLngArrayView,
     F64LatLngArrayViewMut,
+    
     ArrayWithF64Methods,
     ArrayWithF64AngularMethods,
     ArrayWithF64LatLngMethods,
+    
+    OptionF64Array,
+    OptionF64Array1,
+    OptionF64Array2,
 };
 
 #[cfg(test)]
