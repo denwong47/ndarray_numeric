@@ -20,6 +20,7 @@ pub use f64array::{
     F64LatLngArrayViewMut,
     
     ArrayWithF64Methods,
+    ArrayWithF64PartialOrd,
     ArrayWithF64AngularMethods,
     ArrayWithF64LatLngMethods,
     
@@ -28,6 +29,9 @@ pub use f64array::{
     OptionF64Array2,
 };
 
+/// ====================================================================================
+/// UNIT TESTS
+
 #[cfg(test)]
 #[duplicate_item(
     ArrayType       TestName;
@@ -35,6 +39,7 @@ pub use f64array::{
     [ ArcArray2 ]   [test_arcarray2];
 )]
 mod TestName {
+    use std::cmp::Ordering;
     use std::f64::consts;
     use super::*;
     use ndarray::{ArrayType, s};
@@ -66,6 +71,38 @@ mod TestName {
         ).unwrap();
 
         assert!(&arr.slice(s![0..2, 1..3]).sin() == slice);
+
+        // Test PartialOrd
+        let cmp_ge = ArrayType::from_shape_vec(
+            (3, 4),
+            vec![
+                false,              false,               false,              false,
+                false,              true,                true,               true, 
+                true,               true,                true,               true
+            ]
+        ).unwrap();
+        println!("{:?}", &arr.ge(&0.8726646259971648));
+        assert!(&arr.ge(&0.87) == cmp_ge);
+
+        let cmp_gt = ArrayType::from_shape_vec(
+            (3, 4),
+            vec![
+                false,              false,               false,              false,
+                false,              false,               true,               true, 
+                true,               true,                true,               true
+            ]
+        ).unwrap();
+        assert!(&arr.gt(&0.88) == cmp_gt);
+
+        let cmp_partial = ArrayType::from_shape_vec(
+            (3, 4),
+            vec![
+                Some(Ordering::Less), Some(Ordering::Less), Some(Ordering::Less), Some(Ordering::Less),
+                Some(Ordering::Less), Some(Ordering::Equal), Some(Ordering::Greater), Some(Ordering::Greater),
+                Some(Ordering::Greater), Some(Ordering::Greater), Some(Ordering::Greater), Some(Ordering::Greater),
+            ]
+        ).unwrap();
+        assert!(&arr.partial_cmp(&0.8726646259971648) == cmp_partial);
     }
 }
 

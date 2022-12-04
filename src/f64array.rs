@@ -1,4 +1,5 @@
 use std::f64;
+use std::cmp::Ordering;
 
 use duplicate::duplicate_item;
 use ndarray::{
@@ -219,6 +220,61 @@ where   D: Dimension {
         return self.map(|num| num.trunc());
     }
 }
+
+// =====================================================================================
+
+/// PartialOrd comparison mimicking std::cmp::PartialOrd.
+///
+/// This does not however implement the actual trait, since that trait expects `bool`
+/// as returns but we are expecting `Array<bool, D>` instead.
+pub trait ArrayWithF64PartialOrd<D>
+where
+    D: Dimension
+{
+    fn partial_cmp(&self, other: &f64) -> Array<Option<Ordering>, D>;
+
+    fn lt(&self, other: &f64) -> Array<bool, D>;
+    fn le(&self, other: &f64) -> Array<bool, D>;
+    fn gt(&self, other: &f64) -> Array<bool, D>;
+    fn ge(&self, other: &f64) -> Array<bool, D>;
+}
+
+#[duplicate_item(
+    ArrayType                           Generics;
+    [ F64Array<D> ]                     [ D ];
+    [ F64ArcArray<D> ]                  [ D ];
+    [ F64ArrayView<'a, D> ]             [ 'a, D ];
+    [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
+)]
+impl<Generics> ArrayWithF64PartialOrd<D>
+for ArrayType
+where   D: Dimension {
+    fn partial_cmp(&self, other: &f64) -> Array<Option<Ordering>, D>{
+        return self.map(
+            |value| Some(
+                match value {
+                    value if value < other => Ordering::Less,
+                    value if value > other => Ordering::Greater,
+                    _ => Ordering::Equal,
+                }
+            )
+        )
+    }
+
+    #[duplicate_item(
+        PartialOrdMethod;
+        [ lt ];
+        [ le ];
+        [ gt ];
+        [ ge ];
+    )]
+    fn PartialOrdMethod(&self, other: &f64) -> Array<bool, D> {
+        return self.map(
+            |value| value.PartialOrdMethod(other)
+        )
+    }
+}
+
 
 // =====================================================================================
 
