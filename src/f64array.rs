@@ -248,9 +248,8 @@ where   D: Dimension {
 ///
 /// This does not however implement the actual trait, since that trait expects `bool`
 /// as returns but we are expecting `Array<bool, D>` instead.
-pub trait ArrayWithF64PartialOrd<D>
-where
-    D: Dimension
+pub trait ArrayWithF64PartialOrd<D> : ArrayWithF64Methods<D>
+where   D: Dimension
 {
     fn partial_cmp(&self, other: &f64) -> Array<Option<Ordering>, D>;
 
@@ -301,7 +300,7 @@ where   D: Dimension {
 
 /// Additional Trait for Arrays containing angular f64 data.
 /// 
-pub trait ArrayWithF64AngularMethods<D>
+pub trait ArrayWithF64AngularMethods<D> : ArrayWithF64Methods<D>
 where
     D: Dimension
 {
@@ -354,7 +353,7 @@ pub trait ArrayWithF64LatLngMethods : ArrayWithF64AngularMethods<Ix2>
     // [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
 )]
 impl<Generics> ArrayWithF64LatLngMethods
-for ArrayType 
+for ArrayType
 {
     fn normalize(&mut self) {
         return self.axis_iter_mut(Axis(0)).for_each(
