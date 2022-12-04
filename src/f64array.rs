@@ -55,8 +55,14 @@ where
     fn asin(&self) -> F64Array<D>;
     fn asinh(&self) -> F64Array<D>;
     fn atan(&self) -> F64Array<D>;
+
+    // atan2 have 2 cases - other could be scalar or an array.
+    // Because their implementation is completely different and there is no
+    // type overloading in Rust, we split them into two, much like
+    // powi and powf.
     fn atan2_f64(&self, other: f64) -> F64Array<D>;
     fn atan2_arr<'a>(&self, other: F64Array<D>) -> F64Array<D>;
+
     fn atanh(&self) -> F64Array<D>;
     fn cbrt(&self) -> F64Array<D>;
     fn ceil(&self) -> F64Array<D>;
@@ -128,11 +134,13 @@ where   D: Dimension {
     fn atan2_f64(&self, other: f64) -> F64Array<D> {
         return self.map(|num| num.atan2(other));
     }
-    fn atan2_arr(&self, other: F64Array<D>) -> F64Array<D> 
-    where D: Dimension {
+    fn atan2_arr(&self, other: F64Array<D>) -> F64Array<D> {
         // From https://docs.rs/ndarray/latest/src/ndarray/impl_ops.rs.html#115.
         // Honestly not quite sure what this is doing but that's the only
         // elementwise operations between 2 arrays that work.
+
+        // Because the trait bindings of this function dictates that the
+        // 2 arrays have the same dimension, no checks are required.
         return Zip::from(self.view())
                     .and(other.view())
                     .map_collect(
