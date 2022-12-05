@@ -1,4 +1,3 @@
-/target
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -70,3 +69,7 @@ docs/_build/
 
 # Pyenv
 .python-version
+
+# Rust
+/target
+**/Cargo.lock
