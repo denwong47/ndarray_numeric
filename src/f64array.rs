@@ -96,6 +96,16 @@ where
     fn trunc(&self) -> F64Array<D>;
 }
 
+
+/// An additional trait that will be implemented twice, once for `f64`
+/// and once for `F64Array<D>` so that `atan2` will be available as a
+/// method on its own.
+pub trait ArrayWithF64Atan2Methods<T, D> : ArrayWithF64Methods<D>
+where   D: Dimension
+{
+    fn atan2(&self, other: T) -> F64Array<D>;
+}
+
 /// Implements all `f64` native (non-trait) methods for ArrayBase.
 /// 
 /// This `impl` is trait bound to `f64` Arrays only.
@@ -241,6 +251,27 @@ where   D: Dimension {
         return self.map(|num| num.trunc());
     }
 }
+
+#[duplicate_item(
+    OtherType                           FunctionName;
+    [ f64 ]                             [ atan2_f64 ];
+    [ F64Array<D> ]                     [ atan2_arr ];
+)]
+#[duplicate_item(
+    ArrayType                           Generics;
+    [ F64Array<D> ]                     [ D ];
+    [ F64ArcArray<D> ]                  [ D ];
+    [ F64ArrayView<'a, D> ]             [ 'a, D ];
+    [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
+)]
+impl<Generics> ArrayWithF64Atan2Methods<OtherType, D>
+for ArrayType
+where   D: Dimension {
+    fn atan2(&self, other: OtherType) -> F64Array<D> {
+        return self.FunctionName(other);
+    }
+}
+
 
 // =====================================================================================
 
