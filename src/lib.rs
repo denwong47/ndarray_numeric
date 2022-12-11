@@ -39,6 +39,7 @@ pub use f64array::{
     F64LatLngArrayViewMut,
     
     ArrayWithF64Methods,
+    ArrayWithF64Atan2Methods,
     ArrayWithF64PartialOrd,
     ArrayWithF64AngularMethods,
     ArrayWithF64LatLngMethods,
