@@ -16,6 +16,10 @@ use ndarray::{
     Zip,
 };
 
+use super::boolarray::{
+    BoolArray,
+};
+
 pub type F64Array<D> = Array<f64, D>;
 pub type F64Array1 = F64Array<Ix1>;
 pub type F64Array2 = F64Array<Ix2>;
@@ -278,16 +282,16 @@ where   D: Dimension {
 /// PartialOrd comparison mimicking std::cmp::PartialOrd.
 ///
 /// This does not however implement the actual trait, since that trait expects `bool`
-/// as returns but we are expecting `Array<bool, D>` instead.
+/// as returns but we are expecting `BoolArray<d>` instead.
 pub trait ArrayWithF64PartialOrd<D> : ArrayWithF64Methods<D>
 where   D: Dimension
 {
     fn partial_cmp(&self, other: &f64) -> Array<Option<Ordering>, D>;
 
-    fn lt(&self, other: &f64) -> Array<bool, D>;
-    fn le(&self, other: &f64) -> Array<bool, D>;
-    fn gt(&self, other: &f64) -> Array<bool, D>;
-    fn ge(&self, other: &f64) -> Array<bool, D>;
+    fn lt(&self, other: &f64) -> BoolArray<D>;
+    fn le(&self, other: &f64) -> BoolArray<D>;
+    fn gt(&self, other: &f64) -> BoolArray<D>;
+    fn ge(&self, other: &f64) -> BoolArray<D>;
 }
 
 #[duplicate_item(
@@ -319,7 +323,7 @@ where   D: Dimension {
         [ gt ];
         [ ge ];
     )]
-    fn PartialOrdMethod(&self, other: &f64) -> Array<bool, D> {
+    fn PartialOrdMethod(&self, other: &f64) -> BoolArray<D> {
         return self.map(
             |value| value.PartialOrdMethod(other)
         )
