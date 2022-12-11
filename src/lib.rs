@@ -13,6 +13,7 @@ pub use boolarray::{
     BoolArrayViewMut,
     
     ArrayWithBoolIterMethods,
+    ArrayWithBoolMaskMethods,
 
     OptionBoolArray,
     OptionBoolArray1,
@@ -51,24 +52,23 @@ pub use f64array::{
 /// UNIT TESTS
 
 
+
 #[cfg(test)]
-#[duplicate_item(
-    ArrayType           TestName                BaseType        ReshapeFunction                     Answer;
-    [ BoolArray1 ]      [test_boolarray1]       [ Array ]       [ into_shape((100, )).unwrap() ]    [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97];
-    [ BoolArray2 ]      [test_boolarray2]       [ Array ]       [ into_shape((20, 5)).unwrap() ]    [(0, 1), (0, 4), (1, 2), (2, 0), (2, 3), (3, 1), (3, 4), (4, 2), (5, 0), (5, 3), (6, 1), (6, 4), (7, 2), (8, 0), (8, 3), (9, 1), (9, 4), (10, 2), (11, 0), (11, 3), (12, 1), (12, 4), (13, 2), (14, 0), (14, 3), (15, 1), (15, 4), (16, 2), (17, 0), (17, 3), (18, 1), (18, 4), (19, 2)];
-    [ BoolArcArray1 ]   [test_boolarcarray1]    [ ArcArray ]    [ reshape((100, )) ]                [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97];
-    [ BoolArcArray2 ]   [test_boolarcarray2]    [ ArcArray ]    [ reshape((20, 5)) ]                [(0, 1), (0, 4), (1, 2), (2, 0), (2, 3), (3, 1), (3, 4), (4, 2), (5, 0), (5, 3), (6, 1), (6, 4), (7, 2), (8, 0), (8, 3), (9, 1), (9, 4), (10, 2), (11, 0), (11, 3), (12, 1), (12, 4), (13, 2), (14, 0), (14, 3), (15, 1), (15, 4), (16, 2), (17, 0), (17, 3), (18, 1), (18, 4), (19, 2)];
-)]
-mod TestName {
+mod test_boolarray {
     use super::*;
 
-    use ndarray::{
-        array,
-        BaseType,
-    };
+    use ndarray::prelude::*;
     
+    
+    #[duplicate_item(
+        ArrayType           TestName                BaseType        ReshapeFunction                     Answer;
+        [ BoolArray1 ]      [test_boolarray1]       [ Array ]       [ into_shape((100, )).unwrap() ]    [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97];
+        [ BoolArray2 ]      [test_boolarray2]       [ Array ]       [ into_shape((20, 5)).unwrap() ]    [(0, 1), (0, 4), (1, 2), (2, 0), (2, 3), (3, 1), (3, 4), (4, 2), (5, 0), (5, 3), (6, 1), (6, 4), (7, 2), (8, 0), (8, 3), (9, 1), (9, 4), (10, 2), (11, 0), (11, 3), (12, 1), (12, 4), (13, 2), (14, 0), (14, 3), (15, 1), (15, 4), (16, 2), (17, 0), (17, 3), (18, 1), (18, 4), (19, 2)];
+        [ BoolArcArray1 ]   [test_boolarcarray1]    [ ArcArray ]    [ reshape((100, )) ]                [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97];
+        [ BoolArcArray2 ]   [test_boolarcarray2]    [ ArcArray ]    [ reshape((20, 5)) ]                [(0, 1), (0, 4), (1, 2), (2, 0), (2, 3), (3, 1), (3, 4), (4, 2), (5, 0), (5, 3), (6, 1), (6, 4), (7, 2), (8, 0), (8, 3), (9, 1), (9, 4), (10, 2), (11, 0), (11, 3), (12, 1), (12, 4), (13, 2), (14, 0), (14, 3), (15, 1), (15, 4), (16, 2), (17, 0), (17, 3), (18, 1), (18, 4), (19, 2)];
+    )]
     #[test]
-    fn test_boolarray() {
+    fn TestName() {
         let arr = {
             BaseType::from_iter(0_usize..100_usize)
             .ReshapeFunction
@@ -81,22 +81,45 @@ mod TestName {
 
         assert!(arr.indices() == array![Answer]);
     }
+
+    #[duplicate_item(
+        ArrayType           TestName                BaseType        ReshapeFunction;
+        [ BoolArray1 ]      [test_boolmask1]       [ Array ]       [ into_shape((100, )).unwrap() ];
+        [ BoolArray2 ]      [test_boolmask2]       [ Array ]       [ into_shape((20, 5)).unwrap() ];
+    )]
+    #[test]
+    fn TestName() {
+        let mut arr = {
+            BaseType::from_iter(0_usize..100_usize)
+            .ReshapeFunction
+        };
+
+        let answer = arr.map(|v| if *v%3 == 1 { v * 3 } else {*v} );
+        let mask = arr.mapv( |v| v%3 == 1);
+        
+        mask.mask_apply_inplace(&mut arr, |v| *v *= 3);
+
+        assert!(arr == answer);
+    }
 }
 
 #[cfg(test)]
-#[duplicate_item(
-    ArrayType       TestName;
-    [ Array2 ]      [test_f64array];
-    [ ArcArray2 ]   [test_f64arcarray];
-)]
-mod TestName {
+mod test_f64array {
     use std::cmp::Ordering;
     use std::f64::consts;
     use super::*;
-    use ndarray::{ArrayType, s};
+    use ndarray::prelude::*;
+    use ndarray::{
+        ArcArray2,
+    };
 
+    #[duplicate_item(
+        ArrayType       TestName;
+        [ Array2 ]      [test_f64array_2d];
+        [ ArcArray2 ]   [test_f64arcarray_2d];
+    )]
     #[test]
-    fn test_f64array_2d() {
+    fn TestName() {
         let arr = F64Array::from_shape_fn(
             (3, 4),
             |x| ((x.0)*4 + (x.1)) as f64 * consts::PI / 180. * 10.

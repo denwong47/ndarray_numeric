@@ -8,6 +8,7 @@ use ndarray::{
     Dimension,
     Ix1,
     Ix2,
+    Zip,
 };
 
 pub type BoolArray<D> = Array<bool, D>;
@@ -109,5 +110,57 @@ where   D: Dimension {
             )
             .unwrap()
         }
+    }
+}
+
+// =====================================================================================
+
+/// Using BoolArrays as masks for identical sized arrays.
+pub trait ArrayWithBoolMaskMethods<D, A, T>: ArrayWithBoolIterMethods<D>
+where
+    D: Dimension
+{
+    fn mask_apply_inplace<F>(
+        &self,
+        array: &mut T,
+        f: F,
+    )
+    where F: Fn(&mut A);
+}
+
+#[duplicate_item(
+    ArrayType                            Generics;
+    [ BoolArray<D> ]                     [ D, A ];
+    [ BoolArcArray<D> ]                  [ D, A ];
+    [ BoolArrayView<'a, D> ]             [ 'a, D, A ];
+    [ BoolArrayViewMut<'a, D> ]          [ 'a, D, A ];
+)]
+#[duplicate_item(
+    TargetArrayType;
+    [ Array<A, D> ];
+    
+    // Cannot use &mut ArcArray: it will break sharing
+    // See https://docs.rs/ndarray/latest/ndarray/type.ArcArray.html
+    // [ ArcArray<A, D> ];
+)]
+impl<Generics> ArrayWithBoolMaskMethods<D, A, TargetArrayType>
+for ArrayType
+where   D: Dimension {
+    /// Apply 
+    fn mask_apply_inplace<F>(
+        &self,
+        array: &mut TargetArrayType,
+        f: F,
+    )
+    where
+        F: Fn(&mut A)
+    {
+        Zip::from(array)
+            .and(self)
+            .for_each(|v, mask| {
+                if *mask {
+                    f(v);
+                }
+            })
     }
 }
