@@ -1,4 +1,10 @@
 use std::f64;
+use std::ops::{
+    Add,
+    Sub,
+    Mul,
+    Div,
+};
 use std::cmp::Ordering;
 
 use duplicate::duplicate_item;
@@ -115,14 +121,14 @@ where   D: Dimension
 /// This `impl` is trait bound to `f64` Arrays only.
 /// use duplicate::duplicate_item;
 #[duplicate_item(
-    ArrayType                           Generics;
+    __array_type__                      __impl_generics__;
     [ F64Array<D> ]                     [ D ];
     [ F64ArcArray<D> ]                  [ D ];
     [ F64ArrayView<'a, D> ]             [ 'a, D ];
     [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
 )]
-impl<Generics> ArrayWithF64Methods<D>
-for ArrayType
+impl<__impl_generics__> ArrayWithF64Methods<D>
+for __array_type__
 where   D: Dimension {
     fn abs(&self) -> F64Array<D> {
         return ArrayBase::map(self,|num| num.abs());
@@ -257,25 +263,24 @@ where   D: Dimension {
 }
 
 #[duplicate_item(
-    OtherType                           FunctionName;
+    __rhs_type__                        __func_name__;
     [ f64 ]                             [ atan2_f64 ];
     [ F64Array<D> ]                     [ atan2_arr ];
 )]
 #[duplicate_item(
-    ArrayType                           Generics;
+    __array_type__                      __impl_generics__;
     [ F64Array<D> ]                     [ D ];
     [ F64ArcArray<D> ]                  [ D ];
     [ F64ArrayView<'a, D> ]             [ 'a, D ];
     [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
 )]
-impl<Generics> ArrayWithF64Atan2Methods<OtherType, D>
-for ArrayType
+impl<__impl_generics__> ArrayWithF64Atan2Methods<__rhs_type__, D>
+for __array_type__
 where   D: Dimension {
-    fn atan2(&self, other: OtherType) -> F64Array<D> {
-        return self.FunctionName(other);
+    fn atan2(&self, other: __rhs_type__) -> F64Array<D> {
+        return self.__func_name__(other);
     }
 }
-
 
 // =====================================================================================
 
@@ -295,14 +300,14 @@ where   D: Dimension
 }
 
 #[duplicate_item(
-    ArrayType                           Generics;
+    __array_type__                      __impl_generics__;
     [ F64Array<D> ]                     [ D ];
     [ F64ArcArray<D> ]                  [ D ];
     [ F64ArrayView<'a, D> ]             [ 'a, D ];
     [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
 )]
-impl<Generics> ArrayWithF64PartialOrd<D>
-for ArrayType
+impl<__impl_generics__> ArrayWithF64PartialOrd<D>
+for __array_type__
 where   D: Dimension {
     fn partial_cmp(&self, other: &f64) -> Array<Option<Ordering>, D>{
         return self.map(
@@ -330,6 +335,66 @@ where   D: Dimension {
     }
 }
 
+// =====================================================================================
+
+/// Operators between a 2-dimenion array and a 1-dimension one.
+///
+/// Normally, for an LHS array of (L, M), the RHS array of an arith operator is expected
+/// to be of dimension (M).
+/// This trait is for arrays to add, sub, mul or div in place a LHS array of dimension
+/// (L) instead.
+pub trait ArrayWithF64MappedOperators<T>:Add+Sub+Mul+Div+Sized {
+    // Inplace operator.
+    #[duplicate_item(
+        __func_name__;
+        [ add_assign_array1 ];
+        [ sub_assign_array1 ];
+        [ mul_assign_array1 ];
+        [ div_assign_array1 ];
+    )]
+    fn __func_name__(
+        &mut self,
+        rhs: &T,
+    ) -> &Self;
+}
+
+#[duplicate_item(
+    __array_type__                      __impl_generics__;
+    [ F64Array2 ]                       [ ];
+    [ F64ArcArray2 ]                    [ ];
+    // [ F64ArrayViewMut<'a, Ix2> ]        [ 'a ];
+)]
+#[duplicate_item(
+    __rhs_type__;
+    [ F64Array1 ];
+    [ F64ArcArray1 ];
+    [ F64ArrayView<'_, Ix1> ];
+    [ F64ArrayViewMut<'_, Ix1> ];
+)]
+impl<__impl_generics__> ArrayWithF64MappedOperators<__rhs_type__> for __array_type__ {
+    // Inplace operator.
+    #[duplicate_item(
+        __func_name__           __func__;
+        [ add_assign_array1 ]   [ add ];
+        [ sub_assign_array1 ]   [ sub ];
+        [ mul_assign_array1 ]   [ mul ];
+        [ div_assign_array1 ]   [ div ];
+    )]
+    fn __func_name__(
+        &mut self,
+        rhs: &__rhs_type__,
+    ) -> &Self {
+        Zip::from(self.rows_mut())
+                      .and(rhs)
+                      .for_each(
+                        |mut s, o| {
+                            s.assign(&s.__func__(*o))
+                        }
+                      );
+
+        return self;
+    }
+}
 
 // =====================================================================================
 
@@ -348,14 +413,14 @@ where
 /// This `impl` is trait bound to `f64` Arrays only.
 /// use duplicate::duplicate_item;
 #[duplicate_item(
-    ArrayType                           Generics;
+    __array_type__                      __impl_generics__;
     [ F64Array<D> ]                     [ D ];
     [ F64ArcArray<D> ]                  [ D ];
     [ F64ArrayView<'a, D> ]             [ 'a, D ];
     [ F64ArrayViewMut<'a, D> ]          [ 'a, D ];
 )]
-impl<Generics> ArrayWithF64AngularMethods<D>
-for ArrayType
+impl<__impl_generics__> ArrayWithF64AngularMethods<D>
+for __array_type__
 where   D: Dimension {
     fn to_rad(&self) -> F64Array<D> {
         return self * f64::consts::PI / 180.;
@@ -381,14 +446,14 @@ pub trait ArrayWithF64LatLngMethods : ArrayWithF64AngularMethods<Ix2>
 /// This `impl` is trait bound to `f64` Arrays only.
 /// use duplicate::duplicate_item;
 #[duplicate_item(
-    ArrayType                           Generics;
+    __array_type__                      __impl_generics__;
     [ F64LatLngArray ]                  [ ];
     [ F64LatLngArcArray ]               [ ];
     // [ F64LatLngArrayView<'a> ]          [ 'a ];
     [ F64LatLngArrayViewMut<'a> ]          [ 'a ];
 )]
-impl<Generics> ArrayWithF64LatLngMethods
-for ArrayType
+impl<__impl_generics__> ArrayWithF64LatLngMethods
+for __array_type__
 {
     fn normalize(&mut self) {
         return self.axis_iter_mut(Axis(0)).for_each(

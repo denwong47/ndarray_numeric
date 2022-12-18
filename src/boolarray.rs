@@ -51,14 +51,14 @@ where
 
 
 #[duplicate_item(
-    ArrayType                            Generics;
+    __array_type__                       __impl_generics__;
     [ BoolArray<D> ]                     [ D ];
     [ BoolArcArray<D> ]                  [ D ];
     [ BoolArrayView<'a, D> ]             [ 'a, D ];
     [ BoolArrayViewMut<'a, D> ]          [ 'a, D ];
 )]
-impl<Generics> ArrayWithBoolIterMethods<D>
-for ArrayType
+impl<__impl_generics__> ArrayWithBoolIterMethods<D>
+for __array_type__
 where   D: Dimension {
     type Pattern = <D as Dimension>::Pattern;
 
@@ -129,27 +129,27 @@ where
 }
 
 #[duplicate_item(
-    ArrayType                            Generics;
+    __array_type__                       __impl_generics__;
     [ BoolArray<D> ]                     [ D, A ];
     [ BoolArcArray<D> ]                  [ D, A ];
     [ BoolArrayView<'a, D> ]             [ 'a, D, A ];
     [ BoolArrayViewMut<'a, D> ]          [ 'a, D, A ];
 )]
 #[duplicate_item(
-    TargetArrayType;
+    __rhs_type__;
     [ Array<A, D> ];
     
     // Cannot use &mut ArcArray: it will break sharing
     // See https://docs.rs/ndarray/latest/ndarray/type.ArcArray.html
     // [ ArcArray<A, D> ];
 )]
-impl<Generics> ArrayWithBoolMaskMethods<D, A, TargetArrayType>
-for ArrayType
+impl<__impl_generics__> ArrayWithBoolMaskMethods<D, A, __rhs_type__>
+for __array_type__
 where   D: Dimension {
     /// Apply 
     fn mask_apply_inplace<F>(
         &self,
-        array: &mut TargetArrayType,
+        array: &mut __rhs_type__,
         f: F,
     )
     where

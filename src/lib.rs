@@ -41,6 +41,7 @@ pub use f64array::{
     ArrayWithF64Methods,
     ArrayWithF64Atan2Methods,
     ArrayWithF64PartialOrd,
+    ArrayWithF64MappedOperators,
     ArrayWithF64AngularMethods,
     ArrayWithF64LatLngMethods,
     
@@ -108,6 +109,8 @@ mod test_boolarray {
 mod test_f64array {
     use std::cmp::Ordering;
     use std::f64::consts;
+    use crate::f64array::ArrayWithF64MappedOperators;
+
     use super::*;
     use ndarray::prelude::*;
     use ndarray::{
@@ -178,6 +181,61 @@ mod test_f64array {
             ]
         ).unwrap();
         assert!(&arr.partial_cmp(&0.8726646259971648) == cmp_partial);
+    }
+
+    #[duplicate_item(
+        ArrayType       TestName;
+        [ Array2 ]      [test_f64array_opassign_2d];
+        [ ArcArray2 ]   [test_f64arcarray_opassign_2d];
+    )]
+    #[test]
+    fn TestName() {
+        let mut lhs = F64Array::from_shape_fn(
+            (5, 2),
+            |(x, y)| (x+y*10) as f64
+        );
+
+        let rhs = F64Array::range(-3., 2., 1.);
+
+        // Remember that these operations are done in place.
+        // So the following operations cumulates.
+
+        assert_eq!(
+            &lhs.add_assign_array1(&rhs),
+            &arr2(&[[-3.0, 7.0],
+                    [-1.0, 9.0],
+                    [1.0, 11.0],
+                    [3.0, 13.0],
+                    [5.0, 15.0]])
+        );
+
+        assert_eq!(
+            &lhs.sub_assign_array1(&rhs),
+            &arr2(&[[0.0, 10.0],
+                    [1.0, 11.0],
+                    [2.0, 12.0],
+                    [3.0, 13.0],
+                    [4.0, 14.0]])
+        );
+
+        assert_eq!(
+            &lhs.mul_assign_array1(&rhs),
+            &arr2(&[[0.0,   -30.0],
+                    [-2.0,  -22.0],
+                    [-2.0,  -12.0],
+                    [0.0,     0.0],
+                    [4.0,    14.0]])
+        );
+
+        assert_eq!(
+            &lhs.div_assign_array1(&F64Array1::from_elem((5,), 0.1)),
+            &arr2(&[[0.0,    -300.0],
+                    [-20.0,  -220.0],
+                    [-20.0,  -120.0],
+                    [0.0,       0.0],
+                    [40.0,   140.0]])
+        );
+        
     }
 }
 
