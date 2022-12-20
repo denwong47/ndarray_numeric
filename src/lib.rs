@@ -1,6 +1,11 @@
 #[allow(unused_imports)]
 use duplicate::duplicate_item;
 
+mod generic;
+pub use generic::{
+    ArrayFromDuplicatedRows,
+};
+
 mod boolarray;
 pub use boolarray::{
     BoolArcArray,
@@ -53,7 +58,40 @@ pub use f64array::{
 /// ====================================================================================
 /// UNIT TESTS
 
+#[cfg(test)]
+mod test_generic {
+    use super::*;
 
+    use ndarray::prelude::*;
+
+    #[duplicate_item(
+        __array_type__      __test_name__;
+        [ Array2 ]          [test_generic_array2];
+    )]
+    #[test]
+    fn __test_name__() {
+        let (col_count, row_count) = (10_usize, 29_usize);
+        
+        let row = Array1::<usize>::from_iter(0..col_count);
+
+        let result = {
+            Array2
+            ::from_duplicated_rows(
+                row.view(), row_count
+            )
+        };
+
+        let answer = {
+            Array2::<usize>
+            ::from_shape_fn(
+                (row_count, col_count),
+                |(_, j)| j
+            )
+        };
+
+        assert_eq!(result, answer);
+    }
+}
 
 #[cfg(test)]
 mod test_boolarray {
