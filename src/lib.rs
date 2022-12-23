@@ -97,8 +97,7 @@ mod test_generic {
 mod test_boolarray {
     use super::*;
 
-    use ndarray::prelude::*;
-    
+    use ndarray::prelude::*;    
     
     #[duplicate_item(
         ArrayType           TestName                BaseType        ReshapeFunction                     Answer;
@@ -137,9 +136,21 @@ mod test_boolarray {
         let answer = arr.map(|v| if *v%3 == 1 { v * 3 } else {*v} );
         let mask = arr.mapv( |v| v%3 == 1);
         
-        mask.mask_apply_inplace(&mut arr, |v| *v *= 3);
+        mask.mask_apply_inplace(&mut arr, &(|v:&mut usize| *v *= 3));
 
         assert!(arr == answer);
+
+        // Test Zip
+        // let arr2 = {
+        //     BaseType::from_iter(100_usize..200_usize)
+        //     .ReshapeFunction
+        // };
+
+        // mask.mask_apply_inplace(
+        //     Zip::from(&mut arr)
+        //         .and(&arr2),
+        //     &(|v:&mut usize, to_add| *v += to_add)
+        // );
     }
 }
 

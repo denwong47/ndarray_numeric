@@ -8,6 +8,7 @@ use ndarray::{
     Dimension,
     Ix1,
     Ix2,
+    // NdProducer,
     Zip,
 };
 
@@ -116,16 +117,15 @@ where   D: Dimension {
 // =====================================================================================
 
 /// Using BoolArrays as masks for identical sized arrays.
-pub trait ArrayWithBoolMaskMethods<D, A, T>: ArrayWithBoolIterMethods<D>
+pub trait ArrayWithBoolMaskMethods<D, A, F, T>: ArrayWithBoolIterMethods<D>
 where
     D: Dimension
 {
-    fn mask_apply_inplace<F>(
+    fn mask_apply_inplace(
         &self,
-        array: &mut T,
+        array: T,
         f: F,
-    )
-    where F: Fn(&mut A);
+    );
 }
 
 #[duplicate_item(
@@ -137,23 +137,27 @@ where
 )]
 #[duplicate_item(
     __rhs_type__;
-    [ Array<A, D> ];
+    [ &mut Array<A, D> ];
     
     // Cannot use &mut ArcArray: it will break sharing
     // See https://docs.rs/ndarray/latest/ndarray/type.ArcArray.html
     // [ ArcArray<A, D> ];
 )]
-impl<__impl_generics__> ArrayWithBoolMaskMethods<D, A, __rhs_type__>
+impl<__impl_generics__> ArrayWithBoolMaskMethods<D, A, &dyn Fn(&mut A), __rhs_type__>
 for __array_type__
 where   D: Dimension {
-    /// Apply 
-    fn mask_apply_inplace<F>(
+    /// Apply a function to another mutable array, using itself as a mask.
+    /// 
+    /// The function is only applied to ``array[S<D>]`` if array `self[S<D>]`
+    /// is ``true``.
+    /// 
+    /// ``f`` should change the value in place; thus all changes are directly
+    /// applied to the ``array`` in place as well.
+    fn mask_apply_inplace(
         &self,
-        array: &mut __rhs_type__,
-        f: F,
+        array: __rhs_type__,
+        f: &dyn Fn(&mut A),
     )
-    where
-        F: Fn(&mut A)
     {
         Zip::from(array)
             .and(self)
@@ -164,3 +168,46 @@ where   D: Dimension {
             })
     }
 }
+
+// macro_rules! map_impl {
+//     ($([$notlast:ident $($p:ident)*],)+) => {
+//         $(
+//             #[duplicate_item(
+//                 __array_type__                       __impl_generics__;
+//                 [ BoolArray<D> ]                     [ D, A ];
+//                 [ BoolArcArray<D> ]                  [ D, A];
+//                 [ BoolArrayView<'a, D> ]             [ 'a, D, A ];
+//                 [ BoolArrayViewMut<'a, D> ]          [ 'a, D, A ];
+//             )]
+//             #[allow(non_snake_case)]
+//             impl<__impl_generics__, $($p),*> ArrayWithBoolMaskMethods<D, A, &dyn Fn($($p::Item),*), Zip<($($p,)*), D>>
+//             for __array_type__
+//             where   D: Dimension,
+//                     $($p: NdProducer<Dim=D> ,)*
+//             {
+//                 fn mask_apply_inplace(
+//                     &self,
+//                     array: Zip<($($p,)*), D>,
+//                     f: &dyn Fn($($p::Item),*),
+//                 ) {
+//                     array
+//                     .and(self)
+//                     .for_each(| $($p),* , mask | {
+//                         if *mask {
+//                             f($($p),*);
+//                         }
+//                     })
+//                 }
+//             }
+//         )+
+//     }
+// }
+
+// map_impl! {
+//     [true P1],
+//     [true P1 P2],
+//     [true P1 P2 P3],
+//     [true P1 P2 P3 P4],
+//     [true P1 P2 P3 P4 P5],
+//     // [false P1 P2 P3 P4 P5 P6],
+// }
