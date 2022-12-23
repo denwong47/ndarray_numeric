@@ -22,6 +22,9 @@ use ndarray::{
     Zip,
 };
 
+use super::generic::{
+    ArrayProxiedMethods,
+};
 use super::boolarray::{
     BoolArray,
 };
@@ -54,7 +57,7 @@ pub type F64LatLngArrayViewMut<'a> = F64ArrayViewMut<'a, Ix2>;
 /// 
 /// While the elements of the base array is not required to be `f64`,
 /// the returned arrays are locked to `f64` only.
-pub trait ArrayWithF64Methods<D>
+pub trait ArrayWithF64Methods<D>: ArrayProxiedMethods
 where
     D: Dimension
 {
@@ -358,7 +361,7 @@ where   D: Dimension {
 /// to be of dimension (M).
 /// This trait is for arrays to add, sub, mul or div in place a LHS array of dimension
 /// (L) instead.
-pub trait ArrayWithF64MappedOperators<T>:Add+Sub+Mul+Div+Sized {
+pub trait ArrayWithF64MappedOperators<T>:Add+Sub+Mul+Div+Sized+ArrayProxiedMethods {
     // Inplace operator.
     #[duplicate_item(
         __func_name__;

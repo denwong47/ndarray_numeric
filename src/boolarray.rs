@@ -12,6 +12,10 @@ use ndarray::{
     Zip,
 };
 
+use super::generic::{
+    ArrayProxiedMethods,
+};
+
 pub type BoolArray<D> = Array<bool, D>;
 pub type BoolArray1 = BoolArray<Ix1>;
 pub type BoolArray2 = BoolArray<Ix2>;
@@ -25,7 +29,7 @@ pub type OptionBoolArray<D> = Array<Option<bool>, D>;
 pub type OptionBoolArray1 = OptionBoolArray<Ix1>;
 pub type OptionBoolArray2 = OptionBoolArray<Ix2>;
 
-pub trait ArrayWithBoolIterMethods<D>
+pub trait ArrayWithBoolIterMethods<D>: ArrayProxiedMethods
 where
     D: Dimension
 {

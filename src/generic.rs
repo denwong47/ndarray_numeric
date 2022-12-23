@@ -1,12 +1,28 @@
 use duplicate::duplicate_item;
 
 use ndarray::{
+    ArrayBase,
     Array2,
     // ArcArray2,
     ArrayView1,
+    Dimension,
+    RawData,
 };
 
-pub trait ArrayFromDuplicatedRows<A> {
+pub trait ArrayProxiedMethods {
+    fn _proxied_shape(&self) -> &[usize];
+}
+
+impl<S, D> ArrayProxiedMethods for ArrayBase<S, D>
+where   S:RawData,
+        D:Dimension
+{
+    fn _proxied_shape(&self) -> &[usize] {
+        return self.shape();
+    }
+}
+
+pub trait ArrayFromDuplicatedRows<A>:ArrayProxiedMethods {
     fn from_duplicated_rows(
         row:ArrayView1<'_, A>,
         count:usize,

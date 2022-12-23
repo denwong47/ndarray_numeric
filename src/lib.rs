@@ -4,6 +4,7 @@ use duplicate::duplicate_item;
 mod generic;
 pub use generic::{
     ArrayFromDuplicatedRows,
+    ArrayProxiedMethods,
 };
 
 mod boolarray;
