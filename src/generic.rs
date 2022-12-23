@@ -10,15 +10,15 @@ use ndarray::{
 };
 
 pub trait ArrayProxiedMethods {
-    fn _proxied_shape(&self) -> &[usize];
+    fn shape(&self) -> &[usize];
 }
 
 impl<S, D> ArrayProxiedMethods for ArrayBase<S, D>
 where   S:RawData,
         D:Dimension
 {
-    fn _proxied_shape(&self) -> &[usize] {
-        return self.shape();
+    fn shape(&self) -> &[usize] {
+        return ArrayBase::<S, D>::shape(&self);
     }
 }
 
