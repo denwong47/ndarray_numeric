@@ -7,6 +7,8 @@ pub use generic::{
     ArrayProxiedMethods,
 };
 
+pub mod square;
+
 mod boolarray;
 pub use boolarray::{
     BoolArcArray,
