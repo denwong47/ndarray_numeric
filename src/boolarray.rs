@@ -29,7 +29,7 @@ pub type OptionBoolArray<D> = Array<Option<bool>, D>;
 pub type OptionBoolArray1 = OptionBoolArray<Ix1>;
 pub type OptionBoolArray2 = OptionBoolArray<Ix2>;
 
-pub trait ArrayWithBoolIterMethods<D>: ArrayProxiedMethods
+pub trait ArrayWithBoolIterMethods<D>: ArrayProxiedMethods<D, bool>
 where
     D: Dimension
 {

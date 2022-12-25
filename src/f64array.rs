@@ -57,7 +57,7 @@ pub type F64LatLngArrayViewMut<'a> = F64ArrayViewMut<'a, Ix2>;
 /// 
 /// While the elements of the base array is not required to be `f64`,
 /// the returned arrays are locked to `f64` only.
-pub trait ArrayWithF64Methods<D>: ArrayProxiedMethods
+pub trait ArrayWithF64Methods<D>: ArrayProxiedMethods<D, f64>
 where
     D: Dimension
 {
@@ -361,7 +361,7 @@ where   D: Dimension {
 /// to be of dimension (M).
 /// This trait is for arrays to add, sub, mul or div in place a LHS array of dimension
 /// (L) instead.
-pub trait ArrayWithF64MappedOperators<T>:Add+Sub+Mul+Div+Sized+ArrayProxiedMethods {
+pub trait ArrayWithF64MappedOperators<D, T>:Add+Sub+Mul+Div+Sized+ArrayProxiedMethods<D, f64> {
     // Inplace operator.
     #[duplicate_item(
         __func_name__;
@@ -389,7 +389,7 @@ pub trait ArrayWithF64MappedOperators<T>:Add+Sub+Mul+Div+Sized+ArrayProxiedMetho
     [ F64ArrayView<'_, Ix1> ];
     [ F64ArrayViewMut<'_, Ix1> ];
 )]
-impl<__impl_generics__> ArrayWithF64MappedOperators<__rhs_type__> for __array_type__ {
+impl<__impl_generics__> ArrayWithF64MappedOperators<Ix2, __rhs_type__> for __array_type__ {
     // Inplace operator.
     #[duplicate_item(
         __func_name__           __func__;
