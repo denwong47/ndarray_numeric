@@ -1,14 +1,13 @@
 use duplicate::duplicate_item;
 
 use ndarray::{
-    ArrayBase,
+    Array1,
     Array2,
     ArcArray2,
     ArrayView1,
     ArrayView2,
     ArrayViewMut2,
     Axis,
-    Data,
     Ix2,
     s,
     Slice,
@@ -19,17 +18,21 @@ use super::super::generic::{
     ArrayProxiedMethods,
     // ArrayMutProxiedMethods,
 };
+use super::super::primitives::{
+    InitValue
+};
 
 
 pub trait SquareShapedArray<D, A, T>: ArrayProxiedMethods<D, A>
-where   A: Clone
+where   A: Clone+InitValue
 {
     fn from_mapped_array2_fn<F>(
         arr: &T,
         f: F,
         workers: usize,
-    ) -> Self
-    where   F: Fn(ArrayView1<'_, A>, ArrayView2<'_, A>)->Array2<A>;
+        mirror: Option<bool>,
+    ) -> Array2<A>
+    where   F: Fn(ArrayView1<'_, A>, ArrayView2<'_, A>)->Array1<A>;
 }
 
 #[duplicate_item(
@@ -40,7 +43,7 @@ where   A: Clone
     [ ArrayViewMut2<'a, A> ]            [ 'a, A ];
 )]
 impl<__impl_generics__> SquareShapedArray<Ix2, A, __array_type__> for Array2<A>
-where A: Clone
+where   A: Clone+InitValue
 {
     /// 2-dimensional array from applying a function between each pair of values in a 1-dimensional array.
     /// 
@@ -49,20 +52,22 @@ where A: Clone
     /// 
     /// .. warning::
     ///     For this function to be usable, `f(a, b)` *MUST BE* the same as `f(b, a)`.
-    /// 
     ///     This function will NOT calculate both - it will only calculate `f(a, b)` and
     ///     clone the result to mirrored position.
     fn from_mapped_array2_fn<F>(
         arr: &__array_type__,
         f: F,
         workers: usize,
-    ) -> Self
-    where   F: Fn(ArrayView1<'_, A>, ArrayView2<'_, A>)->Array2<A>
+        mirror: Option<bool>,
+    ) -> Array2<A>
+    where   F: Fn(ArrayView1<'_, A>, ArrayView2<'_, A>)->Array1<A>
     {
+        let mirror = mirror.unwrap_or(true);
+
         let len = arr.shape()[0];
         let shape = (len, len);
 
-        let mut result = Array2::<A>::uninit(shape);
+        let mut result = Array2::<A>::from_elem(shape, A::init_value());
 
         func::trapizoid_slices_of_lower_half(len, workers)
              .iter()
@@ -82,16 +87,16 @@ where A: Clone
 
                             let calculated = f(s, e);
 
-                            // calculated
-                            // .move_into_uninit(&mut to_slice);
+                            to_slice.assign(&calculated.view());
                         }
                     );
                 }
              );
+
+        if mirror {
+            func::mirror_along_diagonal(&mut result);
+        }
         
-        // TODO Placeholder only
-        return unsafe {
-            result.assume_init()
-        };
+        return result;
     }
 }

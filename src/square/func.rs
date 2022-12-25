@@ -5,15 +5,16 @@ use ndarray::{
     s,
 };
 
+/// ```no_run
 /// A vector of `RangeInclusive` up to `n` that produces similarly sized trapizoid slices.
 /// 
 /// For an example array of 20x20 (`n`=20) with `count`=4, this function will return the
 /// following Groups in a `Vec<RangeInclusive<usize>>`.
 /// 
-///     Group 1: 0..=9,   consisting of 45 items.
-///     Group 2: 10..=13, consisting of 46 items.
-///     Group 3: 14..=17, consisting of 62 items.
-///     Group 4: 18..=19, consisting of 37 items.
+///     // Group 1: 0..=9,   consisting of 45 items.
+///     // Group 2: 10..=13, consisting of 46 items.
+///     // Group 3: 14..=17, consisting of 62 items.
+///     // Group 4: 18..=19, consisting of 37 items.
 ///     
 ///     [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ///      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -35,6 +36,7 @@ use ndarray::{
 ///      [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0],
 ///      [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0],
 ///      [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0]]
+/// ```
 pub fn trapizoid_slices_of_lower_half(n:usize, count:usize) -> Vec<RangeInclusive<usize>> {
     let mut result:Vec<RangeInclusive<usize>> = Vec::new();
 
@@ -57,6 +59,7 @@ pub fn trapizoid_slices_of_lower_half(n:usize, count:usize) -> Vec<RangeInclusiv
     return result;
 }
 
+/// ```no_run
 /// Mirror the values of the array in place along the diagonal.
 /// 
 /// For example, when we have derived a lower-half array like::
@@ -105,6 +108,7 @@ pub fn trapizoid_slices_of_lower_half(n:usize, count:usize) -> Vec<RangeInclusiv
 ///      [3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 2, 1],
 ///      [4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 0, 1],
 ///      [4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 0]]
+/// ```
 pub fn mirror_along_diagonal<A>(arr: &mut Array2<A>)
 where   A: Clone {
     assert_eq!(

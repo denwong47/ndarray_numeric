@@ -11,7 +11,7 @@ use ndarray::{
     Data,
     DataMut,
     Dimension,
-    Ix,
+    // Ix,
     Ix2,
     RawData,
     Slice,
@@ -20,8 +20,10 @@ use ndarray::{
 
 pub trait ArrayProxiedMethods<D, A> {
     fn shape(&self) -> &[usize];
-    fn row(&self, index: Ix) -> ArrayView1<'_, A>;
-    fn column(&self, index: Ix) -> ArrayView1<'_, A>;
+
+    // These methods are Ix2 only
+    // fn row(&self, index: Ix) -> ArrayView1<'_, A>;
+    // fn column(&self, index: Ix) -> ArrayView1<'_, A>;
 
     fn slice<I>(&self, info: I) -> ArrayView<'_, A, I::OutDim>
     where   I: SliceArg<D>,
@@ -47,13 +49,14 @@ where   S:RawData<Elem=A>+Data,
         return ArrayBase::<S, D>::shape(&self);
     }
 
-    fn row(&self, index: Ix) -> ArrayView1<'_, A> {
-        return ArrayBase::<S, D>::row(&self, index);
-    }
+    // These methods are Ix2 only
+    // fn row(&self, index: Ix) -> ArrayView1<'_, A> {
+    //     return ArrayBase::<S, D>::row(&self, index);
+    // }
 
-    fn column(&self, index: Ix) -> ArrayView1<'_, A> {
-        return ArrayBase::<S, D>::column(&self, index);
-    }
+    // fn column(&self, index: Ix) -> ArrayView1<'_, A> {
+    //     return ArrayBase::<S, D>::column(&self, index);
+    // }
 
     fn slice<I>(&self, info: I) -> ArrayView<'_, A, I::OutDim>
     where   I: SliceArg<D>,

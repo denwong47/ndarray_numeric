@@ -1,3 +1,4 @@
+/// ```no_run
 /// Features for Square arrays.
 /// 
 /// To illustrate the purpose of this module, we can consider a function of::
@@ -11,6 +12,7 @@
 /// We can apply the calculations to the lower-left half of the resultant array,
 /// and mirror the array along the diagonal. This prevents duplicated calculations
 /// without any caching.
+/// ```
 
 pub mod func;
 pub mod traits;
