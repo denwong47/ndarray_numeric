@@ -13,6 +13,10 @@ pub use generic::{
 };
 
 pub mod square;
+pub use square::{
+    SquareShapedArray,
+    mirror_along_diagonal,
+};
 
 mod boolarray;
 pub use boolarray::{

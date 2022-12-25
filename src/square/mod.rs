@@ -19,4 +19,8 @@ pub mod traits;
 
 pub use func::{
     trapizoid_slices_of_lower_half,
+    mirror_along_diagonal,
+};
+pub use traits::{
+    SquareShapedArray,
 };
