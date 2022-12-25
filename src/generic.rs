@@ -4,25 +4,88 @@ use ndarray::{
     ArrayBase,
     Array2,
     // ArcArray2,
+    ArrayView,
     ArrayView1,
+    ArrayViewMut,
+    Axis,
+    Data,
+    DataMut,
     Dimension,
+    // Ix,
+    Ix2,
     RawData,
+    Slice,
+    SliceArg,
 };
 
-pub trait ArrayProxiedMethods {
+pub trait ArrayProxiedMethods<D, A> {
     fn shape(&self) -> &[usize];
+
+    // These methods are Ix2 only
+    // fn row(&self, index: Ix) -> ArrayView1<'_, A>;
+    // fn column(&self, index: Ix) -> ArrayView1<'_, A>;
+
+    fn slice<I>(&self, info: I) -> ArrayView<'_, A, I::OutDim>
+    where   I: SliceArg<D>,
+            D: Dimension;
+
+    
+
+    fn slice_axis(&self, axis: Axis, indices: Slice) -> ArrayView<'_, A, D>
+    where   D: Dimension;
 }
 
-impl<S, D> ArrayProxiedMethods for ArrayBase<S, D>
-where   S:RawData,
+pub trait ArrayMutProxiedMethods<D, A> {
+    fn slice_mut<I>(&mut self, info: I) -> ArrayViewMut<'_, A, I::OutDim>
+    where   I: SliceArg<D>,
+            D: Dimension;
+}
+
+impl<S, D, A> ArrayProxiedMethods<D, A> for ArrayBase<S, D>
+where   S:RawData<Elem=A>+Data,
         D:Dimension
 {
     fn shape(&self) -> &[usize] {
         return ArrayBase::<S, D>::shape(&self);
     }
+
+    // These methods are Ix2 only
+    // fn row(&self, index: Ix) -> ArrayView1<'_, A> {
+    //     return ArrayBase::<S, D>::row(&self, index);
+    // }
+
+    // fn column(&self, index: Ix) -> ArrayView1<'_, A> {
+    //     return ArrayBase::<S, D>::column(&self, index);
+    // }
+
+    fn slice<I>(&self, info: I) -> ArrayView<'_, A, I::OutDim>
+    where   I: SliceArg<D>,
+            D: Dimension,
+    {
+        return ArrayBase::<S, D>::slice(self, info);
+    }
+
+    fn slice_axis(&self, axis: Axis, indices: Slice) -> ArrayView<'_, A, D>
+    where   D: Dimension
+    {
+        return ArrayBase::<S, D>::slice_axis(self, axis, indices);
+    }
 }
 
-pub trait ArrayFromDuplicatedRows<A>:ArrayProxiedMethods {
+impl<S, D, A> ArrayMutProxiedMethods<D, A> for ArrayBase<S, D>
+where   S:RawData<Elem=A>+DataMut,
+        D:Dimension
+{
+    fn slice_mut<I>(&mut self, info: I) -> ArrayViewMut<'_, A, I::OutDim>
+    where   I: SliceArg<D>,
+            D: Dimension
+    {
+        return ArrayBase::<S, D>::slice_mut(self, info);
+    }
+}
+
+
+pub trait ArrayFromDuplicatedRows<A>:ArrayProxiedMethods<Ix2, A> {
     fn from_duplicated_rows(
         row:ArrayView1<'_, A>,
         count:usize,
