@@ -2,6 +2,7 @@ use duplicate::duplicate_item;
 
 use ndarray::{
     ArrayBase,
+    Array,
     Array2,
     // ArcArray2,
     ArrayView,
@@ -19,6 +20,10 @@ use ndarray::{
 };
 
 pub trait ArrayProxiedMethods<D, A> {
+    fn to_owned(&self) -> Array<A, D>
+    where A: Clone;
+    fn view(&self) -> ArrayView<'_, A, D>;
+
     fn shape(&self) -> &[usize];
 
     // These methods are Ix2 only
@@ -28,8 +33,6 @@ pub trait ArrayProxiedMethods<D, A> {
     // fn slice<I>(&self, info: I) -> ArrayView<'_, A, I::OutDim>
     // where   I: SliceArg<D>,
     //         D: Dimension;
-
-    
 
     fn slice_axis(&self, axis: Axis, indices: Slice) -> ArrayView<'_, A, D>
     where   D: Dimension;
@@ -45,6 +48,15 @@ impl<S, D, A> ArrayProxiedMethods<D, A> for ArrayBase<S, D>
 where   S:RawData<Elem=A>+Data,
         D:Dimension
 {
+    fn to_owned(&self) -> Array<A, D> 
+    where A: Clone
+    {
+        return ArrayBase::<S, D>::to_owned(&self);
+    }
+    fn view(&self) -> ArrayView<'_, A, D> {
+        return ArrayBase::<S, D>::view(&self);
+    }
+
     fn shape(&self) -> &[usize] {
         return ArrayBase::<S, D>::shape(&self);
     }
