@@ -12,3 +12,4 @@ doctest = false
 num-traits = "0.2"
 ndarray = "0.15"
 duplicate = "0.4"
+rayon = "1.6"
