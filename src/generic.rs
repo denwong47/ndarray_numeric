@@ -25,9 +25,9 @@ pub trait ArrayProxiedMethods<D, A> {
     // fn row(&self, index: Ix) -> ArrayView1<'_, A>;
     // fn column(&self, index: Ix) -> ArrayView1<'_, A>;
 
-    fn slice<I>(&self, info: I) -> ArrayView<'_, A, I::OutDim>
-    where   I: SliceArg<D>,
-            D: Dimension;
+    // fn slice<I>(&self, info: I) -> ArrayView<'_, A, I::OutDim>
+    // where   I: SliceArg<D>,
+    //         D: Dimension;
 
     
 
@@ -54,16 +54,18 @@ where   S:RawData<Elem=A>+Data,
     //     return ArrayBase::<S, D>::row(&self, index);
     // }
 
+    // The trait `ArrayProxiedMethods` cannot be made into an object
+    // ...because method `slice` has generic type parameters
     // fn column(&self, index: Ix) -> ArrayView1<'_, A> {
     //     return ArrayBase::<S, D>::column(&self, index);
     // }
 
-    fn slice<I>(&self, info: I) -> ArrayView<'_, A, I::OutDim>
-    where   I: SliceArg<D>,
-            D: Dimension,
-    {
-        return ArrayBase::<S, D>::slice(self, info);
-    }
+    // fn slice<I>(&self, info: I) -> ArrayView<'_, A, I::OutDim>
+    // where   I: SliceArg<D>,
+    //         D: Dimension,
+    // {
+    //     return ArrayBase::<S, D>::slice(self, info);
+    // }
 
     fn slice_axis(&self, axis: Axis, indices: Slice) -> ArrayView<'_, A, D>
     where   D: Dimension
