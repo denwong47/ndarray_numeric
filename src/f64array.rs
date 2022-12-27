@@ -361,7 +361,8 @@ where   D: Dimension {
 /// to be of dimension (M).
 /// This trait is for arrays to add, sub, mul or div in place a LHS array of dimension
 /// (L) instead.
-pub trait ArrayWithF64MappedOperators<D, T>:Add+Sub+Mul+Div+Sized+ArrayProxiedMethods<D, f64> {
+pub trait ArrayWithF64MappedOperators<D, T>:Add+Sub+Mul+Div+Sized+ArrayProxiedMethods<D, f64> 
+where D: Dimension {
     // Inplace operator.
     #[duplicate_item(
         __func_name__;

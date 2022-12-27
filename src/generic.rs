@@ -19,12 +19,20 @@ use ndarray::{
     SliceArg,
 };
 
-pub trait ArrayProxiedMethods<D, A> {
+use ndarray::iter::{
+    Lanes,
+};
+
+pub trait ArrayProxiedMethods<D, A> 
+where D: Dimension {
     fn to_owned(&self) -> Array<A, D>
     where A: Clone;
     fn view(&self) -> ArrayView<'_, A, D>;
 
     fn shape(&self) -> &[usize];
+
+    fn columns(&self) -> Lanes<'_, A, D::Smaller>;
+    fn rows(&self) -> Lanes<'_, A, D::Smaller>;
 
     // These methods are Ix2 only
     // fn row(&self, index: Ix) -> ArrayView1<'_, A>;
@@ -59,6 +67,14 @@ where   S:RawData<Elem=A>+Data,
 
     fn shape(&self) -> &[usize] {
         return ArrayBase::<S, D>::shape(&self);
+    }
+
+    fn columns(&self) -> Lanes<'_, A, D::Smaller> {
+        return ArrayBase::<S, D>::columns(&self);
+    }
+
+    fn rows(&self) -> Lanes<'_, A, D::Smaller> {
+        return ArrayBase::<S, D>::rows(&self);
     }
 
     // These methods are Ix2 only

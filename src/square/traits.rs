@@ -11,6 +11,7 @@ use ndarray::{
     ArrayView2,
     ArrayViewMut2,
     Axis,
+    Dimension,
     Ix2,
     s,
     Slice,
@@ -28,7 +29,8 @@ use super::super::primitives::{
 
 
 pub trait SquareShapedArray<D, A, T>: ArrayProxiedMethods<D, A>
-where   A: Clone + Debug + InitValue + Sync + Send
+where   A: Clone + Debug + InitValue + Sync + Send,
+        D: Dimension
 {
     fn from_mapped_array2_fn<F>(
         arr: &T,
